@@ -1,0 +1,506 @@
+Revision history of openPOWERLINK Protocol Stack
+
+Article no.:      SO-1083
+
+Project start:    13.02.2006
+
+Project manager:  R. Sieber (-rs)
+
+Fellow worker:    Daniel Krüger (d.k.)
+                  Michael Ulbricht (m.u.)
+
+=============================================================================
+
+07.11.2006 V1.0     First release, import into CVS
+                    (d.k.)
+
+18.01.2007 V1.1     MN support implemented
+                    (d.k.)
+
+04.02.2008 V1.1     Code cleanup based on PClint output
+                    (d.k.)
+
+14.04.2008 V1.1     - New driver and demo application for X86 with Realtek
+                      RTL8139 network controller under Linux.
+                    - several bug fixes in SDO module and NMT MN module.
+                    (d.k., m.u.)
+
+18.04.2008 V1.2     - new functions in EplApiLinuxUser interface
+                    (m.u.)
+
+17.06.2008 V1.2     - added support for RTL8139C, but refuse RTL8139C+
+                    (d.k.)
+
+14.07.2008 V1.2     - updates to EplApiLinux*.c for coming Qt demo
+                    (d.k.)
+
+23.06.2008 V1.2     - changed default node-ID to MN for RTL8139 MN demo application
+                    - added SoA processing for ErrorHandler and PDO module on MN
+                    - removed and fixed some TODOs and $$$
+                    (d.k.)
+
+19.08.2008 V1.2     - added Qt demo for X86 with RTL8139
+                    - added handling of SDO errors on MN to demo projects.
+                      These may occur if the CN drops and the SDO connection was not closed yet.
+                    - added .cvsignore files to project directories
+                    - added manufacturer specific EPL error codes (EPL_E_*) for
+                      missing IdentResponse and StatusResponse
+                    (d.k.)
+
+25.08.2008 V1.2     - fixed bug in EplApiLinux*.c when EplApiShutdown() was called.
+                      The process image thread still hung within Ioctl and therefore
+                      the file release function was not called until SIGTERM.
+                    (d.k.)
+
+01.10.2008 V1.3     - SDO sequence layer: fixed error behaviour (reaction on retransmission request,
+                      overrun of sequence number). tested against conformance test
+                    - global.h: fixed 64-bit awarness of ARM GCC
+                    (d.k.)
+
+02.10.2008 V1.3     - updated XDD of Demo CN
+                    - fixed size check when writing to OD (e.g. via SDO)
+                    - made handling of some objects compliant to the spec (valid on reset, access rights)
+                      (e.g. object 0x1006, 0x1F98/5)
+                    (d.k.)
+
+06.10.2008 V1.3     - added new module "PDO user part", which validates the PDO communication
+                      and mapping parameters while changing them in the OD
+                    - made object 0x1F8C NMT_CurrNmtState PDO-mappable (according to the spec)
+                    - removed NMT MN state machine parts in Nmtu module, when MN is disabled
+                    - disabled OBDu module in EplCfg.h of most projects, because EPL_OBD_USE_KERNEL
+                      is used (by default in EplDef.h)
+                    (d.k.)
+
+16.10.2008 V1.3     - updated global.h with changes from CANopen
+                    (d.k.)
+
+17.10.2008 V1.3     - NMT MN module: delete timers while executing NMT reset communication
+                    - DLL CN: ignore frame timeout of SoC in PreOp2, because otherwise we
+                      would switch back and forth between PreOp2 and PreOp1
+                    - ErrorHandlerk: added handling for LossOfPReq. Therefor object 0x1C0D was
+                      added to objdict.h
+                    - SDO communication layer: acknowledge NIL command on sequence layer
+                    - adopt changes in objdict.h for XDD
+                    - CN runs successfully through conformance test 0.9 on 2008/10/15
+                    - added parentheses to all occurrences of EPL_MODULE_INTEGRATION,
+                      hence using of EPL_MODULE_* defines to build it in EplCfg.h works.
+                    (d.k.)
+
+07.11.2008 V1.3     - added ARM support to global.h
+                    - added Abstract Memory Interface for ARM processors (EplStack/amiarm.c)
+                    (d.k.)
+
+13.11.2008 V1.3     - fixed handling of NMT_MT6 (kEplNmtEventNmtCycleError) in NMT MN, NMTk and
+                      DLLk module. The asynchronous queues are cleared now correctly, on change
+                      from Op to PreOp1.
+                    (d.k.)
+
+14.11.2008 V1.3     - cf54drv for ECUcore-5484 now works on devboards with PCB 4158.4 and 4158.5
+                    (d.k.)
+
+17.11.2008 V1.3     - bug-fixes to demo-main.c of all targets:
+                      * added prefix APP_ to local defines to avoid name collision with Linux for example
+                      * added some objects to object dictionary for debugging purposes
+                      * fixed speed selection (ignore upper bits now)
+                      * global node-ID variable really reflects now the current node-ID
+                      * added cyclelen parameter to kernel module
+                    - added new Ethernet driver and demo project for Hilscher netX to special GPL-Addon
+                    (d.k.)
+
+21.11.2008 V1.3.1   - updated X86 Qt demo: it draws a rainbow now.
+                    (d.k.)
+
+24.11.2008 V1.3.1   - Edrv8139.c: workaround for bug in Linux kernel added (clearing driver structure
+                      before calling pci_register_driver, because not all pointers inside the
+                      structure are reset correctly, so some are freed twice which is very bad).
+                    (d.k.)
+
+05.12.2008 V1.3.1   - PDO module: ignore mapped object that does not exist.
+                    (d.k.)
+
+08.12.2008 V1.3.1   - EplApiLinuxKernel: using misc device instead of pure character device now,
+                      because it automatically handles the sysfs entries
+                    - added udev rule to X86 Qt demo
+                    - updated demo_cn_kernel for ECUcore-5484 regarding the status and error LEDs
+                    (d.k.)
+
+03.02.2009 V1.3.1   - X86 Qt demo: added message box to show errors when initialization of the stack failed
+                    - EplApiLinuxKernel.c: fixed hang in EplLinRelease(), when stack was not properly
+                      initialized before (e.g. because of missing Ethernet controller)
+                    (d.k.)
+
+05.02.2009 V1.3.1   - added missing file EplLedu.c to public release
+                    (d.k.)
+
+18.02.2009 V1.3.1   - fixed bug in objdict.h: invalid declaration of MNCycTimeExceed cumulative
+                      counter
+                    - fixed project demo_cn_kernel for ECUcore-5484 + some clean-up
+                    - clean-ups to project demo_mn_kernel for ECUcore-5484
+                    (d.k.)
+
+03.03.2009 V1.3.2   - ErrorHandlerk: increment cumulative counters even if threshold
+                      counters are disabled
+                    (d.k.)
+
+18.03.2009 V1.3.2   - updated XDD to work with recent conformance test
+                    (d.k.)
+
+27.03.2009 V1.3.2   - EplSdoUdpu.c, ShbIpc-LinuxKernel.c: switch to kthread API, which works
+                      in any 2.6 version of the Linux kernel.
+                    - Edrv8139: added support for RTL8139C+ which is used in Qemu for example.
+                      BTW, there is actually no difference in Tx buffer handling.
+                    - added support for NMT requests (via object 0x1F9F and NMT
+                      request frames)
+                    - changed Makefile of MN demo for ECUcore-5484: removed dummy C files
+                      that just contain includes of real C files. So this directory looks much cleaner.
+                      Disadvantage: generated .o files are spawned over whole source tree.
+                      There may be collisions with other projects working with the same files.
+                    - changed Makefile of Qt demo project for X86: removed dummy C files that
+                      just contain includes of real C files.
+                    - Qt demo project for X86: added support for Basic Ethernet for state display.
+                      Before this, it was handled as error state.
+                    (d.k.)
+
+30.03.2009 V1.3.2   - applied staging-epl-remove-compiler-warning-from-sharedbuff.c patch from Greg
+                    - only include a file if it is needed
+                    - applied staging-epl-fix-netdev-priv-b0rkage.patch from Greg:
+                      netdev->priv is now gone, use netdev_priv() instead.
+                    - applied staging-epl-fix-sparse-warning-in-proc_fs.c.patch from Greg:
+                      proc_fs.c needs to include proc_fs.h
+                    - applied staging-epl-fix-up-some-non-ansi-functions.patch from Greg:
+                      () isn't valid, you need to put (void).
+                    - EplApiGeneric: used wrong subindex for object 0x1F9F NMTRequest
+                    (d.k.)
+
+06.04.2009 V1.3.2   - Edrv8139: enabled promiscuous mode, so it is possible to brigde other
+                      adapters like virtual machines on the epl network device
+                    - SDO sequence layer: fixed reinit when connection is still alive (tested)
+                    - SDO command layer: tried to fix abort handling on SDO server while segmented
+                      transfer is active, but it seems not to work as expected
+                    (d.k.)
+
+06.04.2009 V1.4     - labeled V1.3.2 as V1.4
+                    (d.k.)
+
+12.05.2009 V1.5     - XDD: fixed wrong access types of some NumberOfEntries objects (should be const instead of ro);
+                      changed name of object 0x1C14 to DLL_CNLossOfSocTolerance_U32;
+                      fixed some default values (e.g. object 0x1f98/0x2, 0x1c0f/0x3, 0x1030/0x1)
+                    - Api_CN objdict.h: changed default of object 0x1030/0x7 to 1.
+                    - EplObd.c: changed EplObdGetDataSize internals to return string sizes without terminating null-character.
+                      This fixes a bug in the SDO module which transmitted strings with terminating null-character.
+                      But this is not allowed according to the spec.
+                    (d.k.)
+
+22.05.2009 V1.5     - made VirtualEthernetLinux.c compatible to Linux kernel V2.6.28 and higher
+                      (new net_device_ops structure)
+                    - synchronized global.h with the one from SYS TEC CANopen stack
+                    - added some support for 64 bit processors
+                    - added define for __func__ if it is missing (like MSVC)
+                    (d.k.)
+
+05.06.2009 V1.5     - added definition of hardware parameter structure for future
+                      extension of init parameter structures
+                    - Api_CN objdict.h: removed all #ifdef within parenthesis
+                    (d.k.)
+
+11.06.2009 V1.5     - added workaround for SdoBusy errors while configuring the cycle length
+                      on the CN in X86 Qt demo
+                    (d.k.)
+
+12.06.2009 V1.5     - added tEplHwParam to init structures of API layer, DLLk and Edrv
+                    (d.k.)
+
+15.06.2009 V1.5     - fixed bug 2392067: kEplDllAsyncTxBufferFull leads to kEplShutdown in SDO ASnd layer
+                    (d.k.)
+
+22.06.2009 V1.5     - added support for object 0x1F9A NMT_HostName_VSTR in EPL API layer
+                    - added object 0x1E40 NWL_IpAddrTable_0h_REC to objdict.h
+                    - bug fix in XDD: same subindex was mentioned twice
+                    - X86 Qt demo: added workaround for SdoBusy errors while configuring the cycle length
+                    (d.k.)
+
+24.06.2009 V1.5.1   - Highres timer on Linux: do not reject too smal time values, but increase them
+                    - asynchronous send queues for StatusRequests and IdentRequests on MN:
+                      made read and write index of queues volatile.
+                    - DLLk module: moved timer creation to CbFrameTransmitted.
+                      This prevents that the timeout elapses before the frame is actually transmitted
+                      over the wire. This should solve the bug 2000711.
+                    - fixed bug 2810782: prescaler of general purpose timer of
+                      MCF548x was not properly calculated
+                    - Windows port: It works now, except some bugs in EplTimeruWin32.c,
+                      which lead to lost IdentReqs on MN.
+                    (d.k.)
+
+25.06.2009 V1.5.1   - included WinPcap 4.0.2 Developer's Pack in CVS (except docs
+                      and examples)
+                    - DLL: added critical section for callback functions from Edrv and highres
+                      timer module. This is only necessary for platforms where Edrv and the
+                      highres timer module are not able to ensure that the callback functions
+                      are called mutual exclusive, e.g. Linux kernel except the Coldfire.
+                    - X86 Qt demo: cleaned up the console output (e.g. NMT states),
+                      removed some warnings.
+                    (d.k.)
+
+26.06.2009 V1.5.1   - OBD: renamed first part of OBD to GenericPart like in CANopen.
+                    - EplObd.h: some clean-up
+                    - API layer: added ObdInitRam function pointer to init parameters.
+                      Now, the application with the OBD (objdict.*) can be easily separated
+                      from the stack, i.e. the stack can be moved into a library.
+                    - API wrapper for Linux kernel-user: added new function EplApiPostUserEvent()
+                    (d.k.)
+
+06.07.2009 V1.5.2   - removed some inexistent or unnecessary header files in Windows
+                      project demo_pcap
+                    (d.k.)
+
+09.07.2009 V1.5.2   - EplDllkTgt.h: includes now linux/spinlock.h instead of asm/spinlock.h,
+                      because this is the right way to do it
+                    (d.k.)
+
+20.07.2009 V1.5.2   - EplSdoUdpu.c: flush signals when receive thread finishes.
+                    (d.k.)
+
+28.07.2009 V1.5.2   - added support for Davicom DM9003 Ethernet controller connected to Atmel AT91RM9200
+                      under Linux 2.6.22.
+                    (d.k.)
+
+21.08.2009 V1.5.3   - export functions of EPL API Layer if compiled as Windows DLL (bug 2841082)
+                    - define the DLL export modifier if the project is compiled as DLL in
+                      Visual Studio (bug 2841086)
+                    (d.k.)
+
+02.09.2009 V1.5.3   - memory leak fixed in Ethernet drivers for Pcap and RTL8139 chip, when releasing TxBuffers.
+                      The real cause of this memory leak was in DLL module because it NULLified the m_pbBuffer pointer
+                      in the TxBuffer structure before calling EdrvReleaseTxBuffer.
+                    (d.k.)
+
+04.09.2009 V1.5.3   - added EplTimeru implementation for use without any operating system and with Windows (EplTimeruGeneric.c).
+                      Now we have a proper functioning implementation of the low-res timers for Windows with PCap driver.
+                    (m.u.)
+
+11.09.2009 V1.5.3   - fixed bug in Linux user-kernel wrapper, that prevents that TPDOs got valid
+                      (race condition in EplApiLinuxKernel.c)
+                    - Linux Qt demo:
+                      removed obsolete reference of PdokCal module in EplApiProcessImage.c
+                    (d.k.)
+
+01.10.2009 V1.5.3   - fixed bug in Edrv8139.c
+                      patch submitted by: andersblomdell, 2009-09-29 at openPOWERLINK help forum
+                    - added missing string.h include for Linux user space in EplTarget.h
+                    - added benchmark macros for Davicom DM9003 ethernet driver
+                    (m.u.)
+
+03.08.2009 V1.6     - EplDllk.c: only accept LossOfFrameTolerance (object 0x1C14) in non NMT reset states,
+                      because all other values are only valid on reset
+                    (d.k.)
+
+04.08.2009 V1.6     - changed semantic of EplDlluCalAsyncSend(): size includes Ethernet header now.
+                      The function is now compatible to EplDllkCalAsyncSend().
+                      This fixes wrong size of NMT commands and requests (were 14 bytes too large).
+                    (d.k.)
+
+05.08.2009 V1.6     - moved Virtual Ethernet driver from kernel part to user part:
+                      * moved initialization from DLLk module to EPL API layer
+                      * implemented setting of IP address and default gateway for virtual
+                        Ethernet interface.
+                    - Api_CN/objdict.h: made object 0x1F8F NMT_MNNodeExpState_AU8
+                      read-only according to spec
+                    (d.k.)
+
+07.08.2009 V1.6     - event queues: added error event post if sink does not exist
+                    - event processing: return error if event not handled
+                    - small corrections to NMT state machine to comply to spec
+                    (d.k.)
+
+11.08.2009 V1.6     - changed the DLL module for the up-coming support of Ethernet controllers with auto-response feature,
+                      i.e. switched to event triggered update of IdentRes, StatusRes and PRes
+                      (they are not updated right before transmission anymore, but updated
+                      when their content has changed)
+                      and separated configuration of PReq/PRes payload limits and timeout from
+                      EplDllkAddNode().
+                    (d.k.)
+
+12.08.2009 V1.6     - timer modules: fixed pointer to unsigned long conversion and vice versa of user-specific timer argument.
+                      This will be bad on 64-bit CPUs where unsigned long has only 32 bit.
+                      Now it is a union.
+                    - improved debug messages in demo project for EdrvPcap under Windows.
+                    - switched definition of PRINTF under Windows from trace (debug output window)
+                      to standard printf, if _CONSOLE is defined (i.e. console project with main function
+                      instead of WinMain).
+                    (d.k.)
+
+14.08.2009 V1.6     - added Ethernet driver and demo project for openMAC with Altera Nios2 CPU as CN
+                      (including the Quartus II project for the EBV DBC3C40 board).
+                      The openMAC is an Ethernet controller written in VHDL with auto-response feature
+                    (d.k.)
+
+01.09.2009 V1.6     - add "Ms" to Timeout variables in SharedBuffer and ShbIpc* implementation to
+                      clearly state the unit.
+                    - fixed ShbIpc-LinuxKernel implementation: job-ready timeout is now treated in unit of 1 ms.
+                    (d.k.)
+
+02.09.2009 V1.6     - Eventk.c and SharedBuff implementation: fixed case of enum constant kShbPriorityHigh
+                    - Added new ShbIpc implementation for use without any operating system (ShbIpc-NoOS.c)
+                    - Added target specific functions for ShbIpc-NoOS.c for the Altera Nios2 CPU
+                    (m.u.)
+
+02.09.2009 V1.6     - New feature: implemented support in DLL for Ethernet drivers/controllers with auto-response
+                      feature. There is a new function EdrvChangeFilter, which must be implemented by each Ethernet driver.
+                    (d.k.)
+
+08.09.2009 V1.6     - optimized PDO processing. It is several times faster that the old version.
+                      All projects need the new module EplPdouCal.c and the module EplPdou.c now.
+                      This implies adding EPL_MODULE_PDOU to the definition of EPL_MODULE_INTEGRATION in EplCfg.h.
+                    (d.k.)
+
+14.09.2009 V1.6     - fixed bug in boot step 1 of MN, where IdentRequest was issued twice (once by NMT Reset Node Sent event
+                      and once by EplNmtMnuStartBootStep1)
+                    (d.k.)
+
+15.09.2009 V1.6     - implemented PRes filtering in DLL and PDOk module.
+                    (d.k.)
+
+16.09.2009 V1.6     - renamed EPL_NO_FIFO to EPL_USE_SHAREDBUFF
+                    - LED module: inserted init state for status LED to force the status LED to off on NMT state initialization
+                    - implemented new macro EPL_EVENT_USE_KERNEL_QUEUE for disabling
+                      the kernel part event queue and directly processing kernel part events within interrupt lock
+                    - cleaned-up default object dictionary: replaced magic constants
+                      of object type and access rights with corresponding enum constants
+                    (d.k.)
+
+16.09.2009 V1.6     - implemented TimerHighResk for openMAC (compare unit)
+                    (m.u.)
+
+17.09.2009 V1.6     - code clean-up: removed unnecessary code and comments, restructured some functions
+                    (d.k.)
+
+18.09.2009 V1.6     - set default vendor-ID in public objdict.h files to 0x00
+                    - changed Makefile of all Linux projects: removed dummy C files
+                      that just contain includes of real C files. So these project directories look
+                      much cleaner now.
+                    - changed Makefile of all Linux projects to remove unnecessary EplObdu.c,
+                      EplObduCal.c and EplObdkCal.c. Only EplObd.c is necessary.
+                    - added EplPdouCal.c and EplPdou.c to Makefile of all demo projects
+                    - added constant EPL_MODULE_PDOU to the definition of EPL_MODULE_INTEGRATION
+                      in EplCfg.h of all demo projects
+                    (d.k.)
+
+18.09.2009 V1.6     - added new demo project "demo_cn_3r1tpdo" which maps 50 byte to 3 RPDOs and 50 byte 1 TPDO
+                    - added new OD "CiA401_3r1tpdo_CN" and moved address ranges 1000h-13FFh and 1B00h-1FFFh to a generic section
+                    (m.u.)
+
+21.09.2009 V1.6     - performance improvements of FPGA design for openMAC demo on EBV DBC3C40 board:
+                      * increased CPU clock to 90 MHz (one additional Read waitstate needs to be added to SRAM interface)
+                      * increased I-Cache to 16 kB
+                      * decreased size of onchip mem to 1 kB
+                    (d.k., m.u.)
+
+22.09.2009 V1.6     - bug fixed in DLL module on MN: delete timer for PRes timeout monitoring, before
+                      next PReq will be sent.
+                    (d.k.)
+
+24.09.2009 V1.6     - implemented macro for DLL configuration to select when to call the sync process function
+                      (e.g. on SoC, on SoA or via special timer sync module).
+                    - removed NetTime from tEdrvRxBuffer and tEplFrameInfo.
+                    - inserted target specific tEplTgtTimeStamp into tEdrvRxBuffer, which will be
+                      used by special timer sync module.
+                    - implemented timer sync module for openMAC, which triggers the sync process function
+                      a configurable time before the SoC.
+                    (d.k., m.u.)
+
+29.09.2009 V1.6     - demo_mn_8139_qt on X86:
+                      * fixed compiler errors
+                      * removed call to function EplPdokCalSetTpdosValid from EplApiProcessImage.c
+                        as this work around is no longer necessary
+                      * integrated the user mode Qt4 application into the Makefile for the kernel module
+                    (m.u.)
+
+29.09.2009 V1.6     - revised main readme.txt
+                    - added update.txt for description of necessary changes to your application project
+                      if updating any previous openPOWERLINK version.
+                    - revised readme.txt files for EBV DBC3C40 board demo projects
+                    (d.k.)
+
+01.10.2009 V1.6     - added benchmark macros for Davicom DM9003 Edrv
+                    (m.u.)
+
+17.11.2009 V1.6     - design for openMAC demo project on EBV DBC3C40:
+                      added EPCS controller, so demo software can be stored persistently in serial flash.
+                    - EdrvPcap: set thread priority of worker thread to time critical
+                    - fixed compile bug in Linux kernel implementation of SharedBuff
+                      (added missing include of semaphore.h when kernel >= 2.6.26)
+                    (d.k.)
+
+01.12.2009 V1.6     - Inserted a cast to ULONG for printf with %l. This avoids a warning when compiling for the x86_64 arch.
+                    - HighResTimer for Linux kernel: Removed usage of HRTIMER_CB_SOFTIRQ for kernels >= 2.6.28
+                    (m.u.)
+
+04.12.2009 V1.6     - CN demo for EBV DBC3C40 board: configured RPDO to use PReq instead of PResMN,
+                      because this is the usual case for the POWERLINK demo network
+                    (d.k.)
+
+18.12.2009 V1.6     - EplObd.c: writing to Domains where no variable is linked (NULL pointer) is allowed
+                      if OD callback function allocates memory.
+                    - removed unnecessary EplObdu.c and similar files from Windows PCap demo project
+                    - fixed warnings from MSVC8 in SharedBuff.c and ShbIpc-Win32.c
+                    - replaced macro EPL_MODULE_CFGMA by EPL_MODULE_CFM, because CFM is the official
+                      abbreviation for Configuration Manager
+                    - added the Configuration Manager module CFM (originally developed by Kalycito)
+                    - EPL API layer: added new event kEplApiEventCfmProgress to inform the application
+                      about the progress of the CDC download process of the CFM
+                    - added CFM demo application for Windows (originally developed by Kalycito)
+                    - trace.c: fixed security warning from MSVC8 or greater
+                    (d.k.)
+
+07.01.2010 V1.6     - EPL API layer: added new event kEplApiEventCfmResult to inform the application
+                      about the result of the CDC download process of the CFM
+                    - fixed UNUSED_PARAMETER for MSVC in global.h
+                    - added UNUSED_PARAMETER macro to several functions to fix "unused parameter" compiler warning.
+                    - fixed compiler warning "conditional expression is constant" by replacing while(1) with for(;;)
+                    - CFM: added some sample CDCs for the Windows CFM demo
+                    - fixed bug in SDO command layer: added missing break in case. This bug caused a transfer
+                      start inside the SDO callback function after a lower layer abort to fail.
+                      Now it starts the reconnection as intended.
+                    - fixed compiler warning "conditional expression is constant" by replacing while(1) with for(;;)
+                    - fixed signed/unsigned conflicts
+                    - added missing local variable initializations
+                    - SharedBuff IPC for Windows: fixed compiler warning "standard incompliant L-value expression"
+                    - Api_CN objdict.h: added object 0x1F22, 0x1F26 and 0x1F27 for CFM
+                    - added support for DOMAIN arrays to the object dictionary module. This is especially
+                      necessary for object 0x1F22 of the CFM.
+                      (the DOMAIN arrays are instanciated by macro EPL_OBD_RAM_INDEX_RAM_VARARRAY_NOINIT in objdict.h)
+                    (d.k.)
+
+08.01.2010 V1.6     - added EplObdCdc.c (module for local CDC file import)
+                    - added object 0x1F26 and 0x1F27 to the generic object dictionary
+                    - added store flag where appropriate to the generic object dictionary
+                    - Api_CN object dictionary: use the generic object dictionary parts from now on.
+                      This eases the maintainability.
+                    - removed dependency of NMT user part module on kernel part module.
+                      NMT CAL is not necessary anymore.
+                    - EplNmtMnuTriggerStateChange posts an event now. This makes this function
+                      thread-safe.
+                    (d.k.)
+
+12.01.2010 V1.6     - cleaned up ioctl commands for Linux kernel userspace wrapper. 
+                      They use now the proper _IO macros.
+                    - added wrapper for POSIX file API under Linux kernel
+                    - added demo project for CFM under Linux kernel (with RTL8139 network card)
+                    (d.k.)
+
+14.01.2010 V1.6     - added check to EPL API layer if SDO channel is used by CFM before performing a SDO transfer for the application.
+                      This gives the CFM a higher priority for SDO transfers than the application
+                    - EplObdCdc.c: added debug messages to local CDC import
+                    - added XDD file for MN object dictionary
+                    (d.k.)
+
+20.01.2010 V1.6     - reduced default number of SDO sequence layer instances to 5
+                    (d.k.)
+
+21.01.2010 V1.6     - fixed warning "dereferencing type-punned pointer will break
+                      strict-aliasing rules" in EplObdMacro.h
+                    - OBD module: declared default values in OBD as const
+                    - Object dictionary: added new macro for PDO mapping parameters:
+                      EPL_OBD_RAM_INDEX_RAM_PDO_MAPPING
+                    (d.k.)
+
