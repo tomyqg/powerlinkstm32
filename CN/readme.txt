@@ -1,1 +1,1 @@
-You must put those files into the Eclipse workspace directory linking Common and FreeRTOS folders to the Project_1
+You must put these files into the Eclipse workspace directory linking Common and FreeRTOS folders to the Project_1
