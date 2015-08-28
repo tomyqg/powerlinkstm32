@@ -1,0 +1,1 @@
+This project is a a porting of an open source implementation of the industrial communication profile Ethernet POWERLINK (openPOWERLINK) on the STM32F107 microcontroller using an open source real time kernel (FreeRTOS)
